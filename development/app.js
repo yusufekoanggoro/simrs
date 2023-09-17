@@ -227,7 +227,7 @@ _.assign(comp, {
             localStorage.setItem('login', JSON.stringify(res)),
             m.redraw()
           ] : [
-            _.assign(state, {login: false, error: 'Password salah'}),
+            _.assign(state, {login: false, loading: false, error: 'Password salah'}),
             m.redraw()
           ])
         ]
