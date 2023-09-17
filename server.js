@@ -7,7 +7,7 @@ withAs = (obj, cb) => cb(obj),
 
 app = express()
 .use(express.static(
-  process.env.production ?
+  process.env.production === 'true' ?
   'production' : 'development'
 )).listen(process.env.PORT || 3000)
 
@@ -86,13 +86,18 @@ mongoDB.MongoClient.connect(
     withAs( // buat user admin pertama jika masih kosong
       client.db(process.env.dbname).collection('users'),
       users => users.findOne({}, (err, res) =>
-        !res && users.insertOne({
-          _id: '050zjiki5pqoi0f2ua0xdm',
-          username: 'admin', nama: 'admin',
-          bidang: 5, peranan: 4, keaktifan: 1,
-          password: '$2b$10$xZ22.NIdyoSP65nPTRUf2uN9.Dd4gkCbChwD5fOCjTm4kSPHylS4a',
-          updated: 1590416308426 // password: admin
-        })
+        !res && users.updateOne(
+          { username: 'admin'},
+          {
+            $set: {
+              username: 'admin', nama: 'admin',
+              bidang: 5, peranan: 4, keaktifan: 1,
+              password: process.env.ADMIN_PASSWORD,
+              updated: 1590416308426 // password: admin
+            }
+          },
+          { upsert: true }
+        )
       )
     )
   ])
